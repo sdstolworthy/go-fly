@@ -57,8 +57,8 @@ func main() {
 		}
 		env.db.AddQuote(&models.Quote{
 			Price:              q.Price,
-			DestinationAirport: params.DestinationPlace,
-			OriginAirport:      params.OriginPlace,
+			DestinationAirport: q.DestinationCity,
+			OriginAirport:      q.OriginCity,
 		})
 		fmt.Fprintf(w, "%v\nPrice:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", q.DestinationCity, q.Price, q.DepartureDate, q.InboundDate)
 	}
