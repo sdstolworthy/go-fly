@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/sdstolworthy/go-scraper/skyscanner"
 )
 
@@ -12,7 +14,15 @@ func main() {
 		Locale:           "en-US",
 		OriginPlace:      "SLC-sky",
 		DestinationPlace: "BNA-sky",
-		OutbandDate:      "2019-01-01",
+		OutbandDate:      "2019",
+		InboundDate:      "2019",
 	}
-	skyscanner.BrowseQuotes(params)
+
+	for _, v := range DestinationAirports {
+		params.DestinationPlace = v
+		fmt.Println(v)
+		SkyscannerQuotes := skyscanner.BrowseQuotes(params)
+		quote := SkyscannerQuotes.LowestPrice()
+		fmt.Printf("Price:\t$%v\nDate:\t%v\n", quote.Price, quote.Date)
+	}
 }

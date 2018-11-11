@@ -45,10 +45,10 @@ func getClient() *http.Client {
 	}
 }
 
-func formatURL(url string) string {
+func formatURL(path string) string {
 	baseURL := "https://skyscanner-skyscanner-flight-search-v1.p.mashape.com/apiservices/"
 
-	return fmt.Sprintf("%vbrowsequotes/v1.0/US/USD/en-US/SLC-sky/BNA-sky/2018-12/2019-01", baseURL)
+	return fmt.Sprintf("%v%v", baseURL, path)
 }
 
 func get(url string) *http.Response {
@@ -65,7 +65,17 @@ func get(url string) *http.Response {
 /*
 BrowseQuotes stub
 */
-func BrowseQuotes(parameters Parameters) {
-	browseQuotes := formatURL("%vbrowsequotes/v1.0/US/USD/en-US/SLC-sky/BNA-sky/2018-12/2019-01")
-	fmt.Printf(browseQuotes)
+func BrowseQuotes(parameters Parameters) Response {
+	browseQuotes := formatURL(fmt.Sprintf("browsequotes/v1.0/%v/%v/%v/%v/%v/%v/%v",
+		parameters.Country,
+		parameters.Currency,
+		parameters.Locale,
+		parameters.OriginPlace,
+		parameters.DestinationPlace,
+		parameters.OutbandDate,
+		parameters.InboundDate,
+	))
+	res := get(browseQuotes)
+	// fmt.Printf("%+v\n", parsedResponse)
+	return parseResponse(res)
 }
