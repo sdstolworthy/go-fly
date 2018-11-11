@@ -62,6 +62,10 @@ func main() {
 		})
 		fmt.Fprintf(w, "%v\nPrice:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", q.DestinationCity, q.Price, q.DepartureDate, q.InboundDate)
 	}
+	quotes, err := env.db.AllQuotes()
+	for _, v := range quotes {
+		fmt.Printf("City: %v\nPrice: %v\n\n", v.DestinationAirport, v.Price)
+	}
 }
 
 func processDestination(destination string, params *skyscanner.Parameters, out chan<- *skyscanner.QuoteSummary) {
