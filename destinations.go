@@ -8,4 +8,8 @@ var DestinationAirports = [...]string{
 	"ZAG-sky",
 	"SAN-sky",
 	"MEX-sky",
+	"BCN-sky",
+	"FCO-sky",
+	"LIM-sky",
+	"UIO-sky",
 }

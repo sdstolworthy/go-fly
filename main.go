@@ -19,7 +19,7 @@ type Env struct {
 }
 
 type quoteChannel struct {
-	quote skyscanner.QuoteSummary
+	quote *skyscanner.QuoteSummary
 	err   error
 }
 
@@ -51,7 +51,8 @@ func main() {
 	}
 	for range DestinationAirports {
 		q := <-quoteChannels
-		if err != nil {
+		fmt.Println("%v", q)
+		if q.err != nil {
 			log.Printf("%v\n\n", err)
 			continue
 		}
@@ -67,10 +68,17 @@ func main() {
 func processDestination(destination string, params *skyscanner.Parameters, out chan<- quoteChannel) {
 	params.DestinationPlace = destination
 	SkyscannerQuotes := skyscanner.BrowseQuotes(*params)
-
 	quote, err := SkyscannerQuotes.LowestPrice()
+	if err != nil {
+
+		log.Printf("%v\n\n", err)
+		out <- quoteChannel{
+			err:   err,
+			quote: nil,
+		}
+	}
 	out <- quoteChannel{
-		err:   err,
-		quote: *quote,
+		err:   nil,
+		quote: quote,
 	}
 }
