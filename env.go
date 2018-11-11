@@ -6,4 +6,6 @@ var DestinationAirports = [...]string{
 	"BNA-sky",
 	"LHR-sky",
 	"ZAG-sky",
+	"SAN-sky",
+	"MEX-sky",
 }

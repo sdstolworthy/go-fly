@@ -1,5 +1,7 @@
 package skyscanner
 
+import "errors"
+
 // Response generic response from skyscanner api
 type Response struct {
 	Quotes []struct {
@@ -57,37 +59,28 @@ func (r *Response) Prices() []float64 {
 
 // A QuoteSummary is a summary of a outbound trip with its price and date
 type QuoteSummary struct {
-	Price float64
-	Date  string
+	Price         float64
+	DepartureDate string
+	InboundDate   string
 }
 
 // LowestPrice prints a list of the lowest prices and their accompanying dates
-func (r *Response) LowestPrice() QuoteSummary {
-	quote := struct {
-		Price float64
-		Date  string
-	}{
-		1000000,
+func (r *Response) LowestPrice() (*QuoteSummary, error) {
+	quote := QuoteSummary{
+		99999999,
+		"",
 		"",
 	}
 	for _, v := range r.Quotes {
 		if v.MinPrice < quote.Price {
 			quote.Price = v.MinPrice
-			quote.Date = v.QuoteDateTime
+			quote.DepartureDate = v.OutboundLeg.DepartureDate
+			quote.InboundDate = v.InboundLeg.DepartureDate
 		}
 	}
-	return quote
+	if quote.Price == 99999999 {
+		return nil, errors.New("No quote found")
+	}
+	return &quote, nil
 
-}
-
-// Parameters generic request type for skyscanner api
-type Parameters struct {
-	Country          string `json:"country"`
-	Currency         string `json:"currency"`
-	Locale           string `json:"locale"`
-	OriginPlace      string `json:"originPlace"`
-	DestinationPlace string `json:"destinationPlace"`
-	OutbandDate      string `json:"outboundDate"`
-	Adults           int    `json:"adults"`
-	InboundDate      string `json:"inboundDate"`
 }
