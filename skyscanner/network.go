@@ -47,7 +47,9 @@ func getClient() *http.Client {
 }
 
 func formatURL(path string) string {
-	baseURL := "https://skyscanner-skyscanner-flight-search-v1.p.mashape.com/apiservices/"
+	var c Config
+	c.getConfig()
+	baseURL := c.getConfig().BaseURL
 
 	return fmt.Sprintf("%v%v", baseURL, path)
 }

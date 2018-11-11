@@ -11,6 +11,7 @@ import (
 type Config struct {
 	MashapeKey  string `yaml:"mashape_key"`
 	MashapeHost string `yaml:"mashape_host"`
+	BaseURL     string `yaml:"base_url"`
 }
 
 func (c *Config) getConfig() *Config {

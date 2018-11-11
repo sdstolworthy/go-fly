@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/sdstolworthy/go-scraper/skyscanner"
+	"github.com/sdstolworthy/go-fly/skyscanner"
 )
 
 func main() {
