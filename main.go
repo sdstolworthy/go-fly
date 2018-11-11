@@ -18,6 +18,11 @@ type Env struct {
 	db models.Datastore
 }
 
+type quoteChannel struct {
+	quote skyscanner.QuoteSummary
+	err   error
+}
+
 func main() {
 	db, err := models.NewDB("test.db")
 	if err != nil {
@@ -37,24 +42,35 @@ func main() {
 		OutbandDate:      "anytime",
 		InboundDate:      "anytime",
 	}
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', 0)
+
+	quoteChannels := make(chan quoteChannel)
 
 	for _, v := range DestinationAirports {
-		params.DestinationPlace = v
-		fmt.Println(v)
-		SkyscannerQuotes := skyscanner.BrowseQuotes(params)
-
-		w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', 0)
-		quote, err := SkyscannerQuotes.LowestPrice()
+		go processDestination(v, &params, quoteChannels)
+	}
+	for range DestinationAirports {
+		q := <-quoteChannels
 		if err != nil {
 			log.Printf("%v\n\n", err)
 			continue
 		}
 		env.db.AddQuote(&models.Quote{
-			Price:              quote.Price,
+			Price:              q.quote.Price,
 			DestinationAirport: params.DestinationPlace,
 			OriginAirport:      params.OriginPlace,
 		})
+		fmt.Fprintf(w, "%v\nPrice:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", q.quote.DestinationCity, q.quote.Price, q.quote.DepartureDate, q.quote.InboundDate)
+	}
+}
 
-		fmt.Fprintf(w, "Price:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", quote.Price, quote.DepartureDate, quote.InboundDate)
+func processDestination(destination string, params *skyscanner.Parameters, out chan<- quoteChannel) {
+	params.DestinationPlace = destination
+	SkyscannerQuotes := skyscanner.BrowseQuotes(*params)
+
+	quote, err := SkyscannerQuotes.LowestPrice()
+	out <- quoteChannel{
+		err:   err,
+		quote: *quote,
 	}
 }

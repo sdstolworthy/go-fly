@@ -1,6 +1,9 @@
 package skyscanner
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 // Response generic response from skyscanner api
 type Response struct {
@@ -48,6 +51,16 @@ type Response struct {
 	} `json:"Currencies"`
 }
 
+// PlaceName returns a places name from its id
+func (r *Response) PlaceName(id int) (string, error) {
+	for _, v := range r.Places {
+		if v.PlaceID == id {
+			return fmt.Sprintf("%v, %v", v.CityName, v.CountryName), nil
+		}
+	}
+	return "", errors.New("Place not found")
+}
+
 // Prices returns an array of the lowest prices for a route and date
 func (r *Response) Prices() []float64 {
 	priceList := make([]float64, len(r.Quotes))
@@ -59,9 +72,11 @@ func (r *Response) Prices() []float64 {
 
 // A QuoteSummary is a summary of a outbound trip with its price and date
 type QuoteSummary struct {
-	Price         float64
-	DepartureDate string
-	InboundDate   string
+	Price           float64
+	DepartureDate   string
+	InboundDate     string
+	OriginCity      string
+	DestinationCity string
 }
 
 // LowestPrice prints a list of the lowest prices and their accompanying dates
@@ -70,8 +85,12 @@ func (r *Response) LowestPrice() (*QuoteSummary, error) {
 		99999999,
 		"",
 		"",
+		"",
+		"",
 	}
 	for _, v := range r.Quotes {
+		quote.OriginCity, _ = r.PlaceName(v.OutboundLeg.OriginID)
+		quote.DestinationCity, _ = r.PlaceName(v.OutboundLeg.DestinationID)
 		if v.MinPrice < quote.Price {
 			quote.Price = v.MinPrice
 			quote.DepartureDate = v.OutboundLeg.DepartureDate
