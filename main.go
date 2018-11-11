@@ -44,41 +44,34 @@ func main() {
 	}
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', 0)
 
-	quoteChannels := make(chan quoteChannel)
+	quoteChannels := make(chan *skyscanner.QuoteSummary)
 
 	for _, v := range DestinationAirports {
 		go processDestination(v, &params, quoteChannels)
 	}
 	for range DestinationAirports {
 		q := <-quoteChannels
-		fmt.Println("%v", q)
-		if q.err != nil {
+		if q == nil {
 			log.Printf("%v\n\n", err)
 			continue
 		}
 		env.db.AddQuote(&models.Quote{
-			Price:              q.quote.Price,
+			Price:              q.Price,
 			DestinationAirport: params.DestinationPlace,
 			OriginAirport:      params.OriginPlace,
 		})
-		fmt.Fprintf(w, "%v\nPrice:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", q.quote.DestinationCity, q.quote.Price, q.quote.DepartureDate, q.quote.InboundDate)
+		fmt.Fprintf(w, "%v\nPrice:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", q.DestinationCity, q.Price, q.DepartureDate, q.InboundDate)
 	}
 }
 
-func processDestination(destination string, params *skyscanner.Parameters, out chan<- quoteChannel) {
+func processDestination(destination string, params *skyscanner.Parameters, out chan<- *skyscanner.QuoteSummary) {
 	params.DestinationPlace = destination
 	SkyscannerQuotes := skyscanner.BrowseQuotes(*params)
 	quote, err := SkyscannerQuotes.LowestPrice()
 	if err != nil {
 
 		log.Printf("%v\n\n", err)
-		out <- quoteChannel{
-			err:   err,
-			quote: nil,
-		}
+		out <- nil
 	}
-	out <- quoteChannel{
-		err:   nil,
-		quote: quote,
-	}
+	out <- quote
 }
