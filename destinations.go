@@ -12,4 +12,7 @@ var DestinationAirports = [...]string{
 	"FCO-sky",
 	"LIM-sky",
 	"UIO-sky",
+	"DMK-sky",
+	"ICN-sky",
+	"HMD-sky",
 }
