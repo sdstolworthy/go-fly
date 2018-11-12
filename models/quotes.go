@@ -1,6 +1,8 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 // Quote type representing historical entries into database
 type Quote struct {
@@ -22,4 +24,10 @@ func (db *DB) AllQuotes() ([]*Quote, error) {
 func (db *DB) AddQuote(quote *Quote) (*Quote, error) {
 	db.Create(quote)
 	return quote, nil
+}
+
+// DeleteQuote deletes a quote from the db
+func (db *DB) DeleteQuote(quote *Quote) (bool, error) {
+	db.Delete(quote)
+	return true, nil
 }

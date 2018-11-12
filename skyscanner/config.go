@@ -15,7 +15,7 @@ type Config struct {
 }
 
 func (c *Config) getConfig() *Config {
-	yamlFile, err := ioutil.ReadFile("conf.yaml")
+	yamlFile, err := ioutil.ReadFile("skyscanner-conf.yaml")
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}

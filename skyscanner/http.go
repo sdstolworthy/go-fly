@@ -81,3 +81,16 @@ func BrowseQuotes(parameters Parameters) Response {
 	res := get(browseQuotes)
 	return parseResponse(res)
 }
+
+// ProcessDestination does asynchronous api requests to the SkyScanner API
+func ProcessDestination(destination string, params *Parameters, out chan<- *QuoteSummary) {
+	params.DestinationPlace = destination
+	SkyscannerQuotes := BrowseQuotes(*params)
+	quote, err := SkyscannerQuotes.LowestPrice()
+	if err != nil {
+
+		log.Printf("%v\n\n", err)
+		out <- nil
+	}
+	out <- quote
+}

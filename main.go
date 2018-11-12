@@ -29,6 +29,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	defer db.Close()
+
 	env := &Env{db}
 
 	fmt.Println()
@@ -47,7 +49,7 @@ func main() {
 	quoteChannels := make(chan *skyscanner.QuoteSummary)
 
 	for _, v := range DestinationAirports {
-		go processDestination(v, &params, quoteChannels)
+		go skyscanner.ProcessDestination(v, &params, quoteChannels)
 	}
 	for range DestinationAirports {
 		q := <-quoteChannels
@@ -66,16 +68,4 @@ func main() {
 	for _, v := range quotes {
 		fmt.Printf("City: %v\nPrice: %v\n\n", v.DestinationAirport, v.Price)
 	}
-}
-
-func processDestination(destination string, params *skyscanner.Parameters, out chan<- *skyscanner.QuoteSummary) {
-	params.DestinationPlace = destination
-	SkyscannerQuotes := skyscanner.BrowseQuotes(*params)
-	quote, err := SkyscannerQuotes.LowestPrice()
-	if err != nil {
-
-		log.Printf("%v\n\n", err)
-		out <- nil
-	}
-	out <- quote
 }
