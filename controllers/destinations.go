@@ -1,4 +1,4 @@
-package main
+package controllers
 
 // DestinationAirports is an array of all airports that should be queried
 var DestinationAirports = [...]string{
