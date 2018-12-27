@@ -1,10 +1,7 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
-	"os"
-	"text/tabwriter"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdstolworthy/go-fly/environment"
@@ -18,40 +15,26 @@ var params = skyscanner.Parameters{
 	Country:          "US",
 	Currency:         "USD",
 	Locale:           "en-US",
-	OriginPlace:      "SLC-sky",
+	OriginPlace:      "BNA-sky",
 	DestinationPlace: "BNA-sky",
 	OutbandDate:      "anytime",
 	InboundDate:      "anytime",
 }
 
+type quoteParameters struct {
+	Adults           int16  `json:"adults"`
+	Country          string `json:"country"`
+	Currency         string `json:"currency"`
+	Locale           string `json:"locale"`
+	OriginPlace      string `json:"originPlace"`
+	DestinationPlace string `json:"destinationPlace"`
+	OutboundDate     string `json:"outboundDate"`
+	InboundDate      string `json:"inboundDate"`
+}
+
 // QuoteController handles all quote routes
 type QuoteController struct {
 	BaseController
-}
-
-func getQuote(context *gin.Context) {
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 3, ' ', 0)
-	quoteChannels := make(chan *skyscanner.QuoteSummary)
-	for _, v := range DestinationAirports {
-		go skyscanner.ProcessDestination(v, &params, quoteChannels)
-	}
-	for range DestinationAirports {
-		q := <-quoteChannels
-		if q == nil {
-			continue
-		}
-		environment.Env.Db.AddQuote(&models.Quote{
-			Price:              q.Price,
-			DestinationAirport: q.DestinationCity,
-			OriginAirport:      q.OriginCity,
-		})
-		fmt.Fprintf(w, "%v\nPrice:\t$%v\nDeparture:\t%v\nReturn:\t%v\t\n\n", q.DestinationCity, q.Price, q.DepartureDate, q.InboundDate)
-	}
-	quotes, _ := environment.Env.Db.AllQuotes()
-	// for _, v := range quotes {
-	// 	fmt.Printf("City: %v\nPrice: %v\n\n", v.DestinationAirport, v.Price)
-	// }
-	context.JSON(http.StatusOK, quotes)
 }
 
 // SetRoutes initializes the routes for the Quote Controller
@@ -61,4 +44,31 @@ func (c *QuoteController) SetRoutes(router *gin.RouterGroup) {
 		c.String(http.StatusOK, "Pong")
 	})
 	router.GET("/getQuote", getQuote)
+	router.GET("/allQuotes", allQuotes)
+}
+
+func getQuote(context *gin.Context) {
+	var newQuotes []*skyscanner.QuoteSummary
+	quoteChannels := make(chan *skyscanner.QuoteSummary)
+	for _, v := range DestinationAirports {
+		go skyscanner.ProcessDestination(v, &params, quoteChannels)
+	}
+	for range DestinationAirports {
+		q := <-quoteChannels
+		if q == nil {
+			continue
+		}
+		newQuotes = append(newQuotes, q)
+		environment.Env.Db.AddQuote(&models.Quote{
+			Price:              q.Price,
+			DestinationAirport: q.DestinationCity,
+			OriginAirport:      q.OriginCity,
+		})
+	}
+	context.JSON(http.StatusOK, newQuotes)
+}
+
+func allQuotes(context *gin.Context) {
+	quotes, _ := environment.Env.Db.AllQuotes()
+	context.JSON(http.StatusOK, quotes)
 }
