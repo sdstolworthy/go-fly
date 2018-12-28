@@ -1,15 +1,16 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-)
+import "time"
 
 // Quote type representing historical entries into database
 type Quote struct {
-	gorm.Model
-	DestinationAirport string
-	OriginAirport      string
-	Price              float64
+	ID                 uint      `gorm:"primary_key" json:"id"`
+	CreatedAt          time.Time `json:"createdAt"`
+	UpdatedAt          time.Time `json:"updatedAt"`
+	DeletedAt          time.Time `json:"deletedAt"`
+	DestinationAirport string    `json:"destinationAirport"`
+	OriginAirport      string    `json:"originAirport"`
+	Price              float64   `json:"price"`
 }
 
 // AllQuotes gets all quotes

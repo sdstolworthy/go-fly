@@ -22,14 +22,7 @@ var params = skyscanner.Parameters{
 }
 
 type quoteParameters struct {
-	Adults           int16  `json:"adults"`
-	Country          string `json:"country"`
-	Currency         string `json:"currency"`
-	Locale           string `json:"locale"`
-	OriginPlace      string `json:"originPlace"`
-	DestinationPlace string `json:"destinationPlace"`
-	OutboundDate     string `json:"outboundDate"`
-	InboundDate      string `json:"inboundDate"`
+	skyscanner.Parameters
 }
 
 // QuoteController handles all quote routes
@@ -43,15 +36,21 @@ func (c *QuoteController) SetRoutes(router *gin.RouterGroup) {
 	router.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "Pong")
 	})
-	router.GET("/getQuote", getQuote)
+	router.POST("/getQuote", getQuote)
 	router.GET("/allQuotes", allQuotes)
 }
 
 func getQuote(context *gin.Context) {
+	var requestBody quoteParameters
+	if err := context.ShouldBindJSON(&requestBody); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	var newQuotes []*skyscanner.QuoteSummary
 	quoteChannels := make(chan *skyscanner.QuoteSummary)
 	for _, v := range DestinationAirports {
-		go skyscanner.ProcessDestination(v, &params, quoteChannels)
+		go skyscanner.ProcessDestination(v, &requestBody.Parameters, quoteChannels)
 	}
 	for range DestinationAirports {
 		q := <-quoteChannels

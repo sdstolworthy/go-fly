@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdstolworthy/go-fly/controllers"
@@ -23,6 +24,7 @@ func main() {
 	defer environment.CloseDatabase()
 
 	router := gin.Default()
+	router.Use(cors.Default())
 	defineRoutes(router)
 	router.Run()
 }
