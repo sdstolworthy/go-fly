@@ -7,10 +7,9 @@ Go Fly hits the skyscanner api and finds the cheapest flights available for the 
 # Getting Started
 
 1. Clone the repo. `git clone git@github.com:sdstolworthy/go-fly.git && cd go-fly/`
-2. Get the dependencies `go get -d ./...`
+2. Get the dependencies `dep ensure`
 3. (Optional) Seed the database
-    1. Move to the `seed` directory `cd seed/`
-    2. Run all the files `go run *.go`
+    1. Run the seed files `go run seed/*.go`
 4. Run the server from the main directory `go run *.go`
 
 For convenience, I have included my `.vscode/launch.json`. You can use this to work with the debugging functions in VSCode.

@@ -40,7 +40,7 @@ func parseAirportCSV() []*models.Airport {
 
 	var airports []*models.Airport
 	// Load a csv file.
-	f, _ := os.Open("../data/airports.csv")
+	f, _ := os.Open("./data/airports.csv")
 
 	// Create a new reader.
 	r := csv.NewReader(bufio.NewReader(f))
