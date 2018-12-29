@@ -2,3 +2,4 @@
 **/*.db
 **/skyscanner-conf.yaml
 skyscanner-conf.yaml
+debug

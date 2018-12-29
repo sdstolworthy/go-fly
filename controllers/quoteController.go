@@ -10,28 +10,6 @@ import (
 	skyscanner "github.com/sdstolworthy/go-skyscanner"
 )
 
-// TODO: Remove
-var params = skyscanner.BrowseParameters{
-	OriginPlace:      "BNA-sky",
-	DestinationPlace: "SLC-sky",
-	BaseParameters: skyscanner.BaseParameters{
-		Adults:      1,
-		Country:     "US",
-		Currency:    "USD",
-		Locale:      "en-US",
-		OutbandDate: "anytime",
-		InboundDate: "anytime",
-	},
-}
-
-type quoteParameters struct {
-	skyscanner.BrowseParameters
-}
-
-type batchParameters struct {
-	skyscanner.BatchBrowseParameters
-}
-
 // QuoteController handles all quote routes
 type QuoteController struct {
 	BaseController
@@ -52,25 +30,30 @@ func (c *QuoteController) SetRoutes(router *gin.RouterGroup) {
 	router.POST("/batchQuotes", batchQuotes)
 }
 
+type quoteParameters struct {
+	skyscanner.BrowseParameters
+}
+
 func getQuote(context *gin.Context) {
 	var requestBody quoteParameters
 	if err := context.ShouldBindJSON(&requestBody); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	quote, err := skyscanner.ProcessDestination(&requestBody.BrowseParameters)
 
 	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "No quote found"})
+		context.JSON(http.StatusNoContent, gin.H{"message": "No quote found"})
 		return
 	}
-	environment.Env.Db.AddQuote(&models.Quote{
-		Price:              quote.Price,
-		DestinationAirport: quote.DestinationCity,
-		OriginAirport:      quote.OriginCity,
-	})
+	saveQuote(quote)
 	context.JSON(http.StatusOK, quote)
 	return
+}
+
+type batchParameters struct {
+	skyscanner.BatchBrowseParameters
 }
 
 func batchQuotes(context *gin.Context) {
@@ -79,15 +62,9 @@ func batchQuotes(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	requestBody.BatchBrowseParameters.Destinations = DestinationAirports[:]
 	quotes := skyscanner.BatchDestinations(&requestBody.BatchBrowseParameters)
-	for _, q := range quotes {
-		fmt.Println("test", q)
-		environment.Env.Db.AddQuote(&models.Quote{
-			Price:              q.Price,
-			DestinationAirport: q.DestinationCity,
-			OriginAirport:      q.OriginCity,
-		})
-	}
+	saveQuotes(quotes)
 	context.JSON(http.StatusOK, quotes)
 }
 
@@ -97,4 +74,18 @@ func allQuotes(context *gin.Context) {
 		fmt.Println(v)
 	}
 	context.JSON(http.StatusOK, quotes)
+}
+
+func saveQuote(q *skyscanner.QuoteSummary) {
+	environment.Env.Db.AddQuote(&models.Quote{
+		Price:              q.Price,
+		DestinationAirport: q.DestinationCity,
+		OriginAirport:      q.OriginCity,
+	})
+}
+
+func saveQuotes(q []*skyscanner.QuoteSummary) {
+	for _, quote := range q {
+		saveQuote(quote)
+	}
 }
