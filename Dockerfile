@@ -2,7 +2,7 @@ FROM golang
 
 ADD . /go/src/github.com/sdstolworthy/go-fly
 
-RUN /bin/sh -c "cd /go/src/github.com/sdstolworthy && go get ./... && cd seed && go run seed/*.go"
+RUN /bin/sh -c "cd /go/src/github.com/sdstolworthy/go-fly && go get ./... && cd seed && go run seed/*.go"
 
 RUN go install github.com/sdstolworthy/go-fly
 
