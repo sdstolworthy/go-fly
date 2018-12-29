@@ -19,7 +19,7 @@ var Env *Environment
 
 // InitializeDatabase creates or opens the database
 func InitializeDatabase() {
-	db, err := models.NewDB("../test.db")
+	db, err := models.NewDB("test.db")
 	if err != nil {
 		log.Fatal(err)
 	}

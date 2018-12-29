@@ -11,11 +11,11 @@ import (
 	"github.com/sdstolworthy/go-fly/models"
 )
 
-func seedAirports() {
-	parseAirportCSV()
+func seedAirports() []*models.Airport {
+	return parseAirportCSV()
 }
 
-func parseAirportCSV() {
+func parseAirportCSV() []*models.Airport {
 	type Field int
 	const (
 		id               Field = 0
@@ -37,6 +37,8 @@ func parseAirportCSV() {
 		wikipediaLink    Field = 16
 		keywords         Field = 17
 	)
+
+	var airports []*models.Airport
 	// Load a csv file.
 	f, _ := os.Open("../data/airports.csv")
 
@@ -51,11 +53,8 @@ func parseAirportCSV() {
 		if record[airportType] != "large_airport" {
 			continue
 		}
-		if record[iataCode] == "BNA" {
-			fmt.Println(record[iataCode])
-		}
 		fmt.Println(record)
-		environment.Env.Db.SaveAirport(&models.Airport{
+		newAirport := &models.Airport{
 			Continent:    record[continent],
 			Country:      record[isoCountry],
 			IataCode:     record[iataCode],
@@ -63,6 +62,9 @@ func parseAirportCSV() {
 			Region:       record[isoRegion],
 			Municipality: record[municipality],
 			Name:         record[name],
-		})
+		}
+		environment.Env.Db.SaveAirport(newAirport)
+		airports = append(airports, newAirport)
 	}
+	return airports
 }

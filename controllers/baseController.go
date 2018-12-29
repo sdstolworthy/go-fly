@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,4 +17,8 @@ type BaseController struct {
 
 func (c *BaseController) setRouter(router *gin.RouterGroup) {
 	c.router = router
+}
+
+func ping(c *gin.Context) {
+	c.String(http.StatusOK, "Pong")
 }

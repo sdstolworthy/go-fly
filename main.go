@@ -26,4 +26,7 @@ func defineRoutes(router *gin.Engine) {
 	})
 	quoteController := new(controllers.QuoteController)
 	quoteController.SetRoutes(router.Group("/quotes"))
+
+	airportController := new(controllers.AirportController)
+	airportController.SetRoutes(router.Group("/airports"))
 }

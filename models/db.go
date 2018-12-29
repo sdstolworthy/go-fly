@@ -11,6 +11,7 @@ type Datastore interface {
 	AllQuotes() ([]*Quote, error)
 	AddQuote(*Quote) (*Quote, error)
 	SaveAirport(*Airport) (*Airport, error)
+	SearchAirports(*Airport) ([]*Airport, error)
 }
 
 // DB contains a database

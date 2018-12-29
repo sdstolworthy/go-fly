@@ -6,5 +6,6 @@ import (
 
 func main() {
 	environment.InitializeDatabase()
-	seedAirports()
+	airports := seedAirports()
+	seedQuotes(airports)
 }

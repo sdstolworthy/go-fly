@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,9 +19,7 @@ func (c *QuoteController) SetRoutes(router *gin.RouterGroup) {
 	c.setRouter(router)
 
 	// GET
-	router.GET("/ping", func(c *gin.Context) {
-		c.String(http.StatusOK, "Pong")
-	})
+	router.GET("/ping", ping)
 	router.GET("/allQuotes", allQuotes)
 
 	// POST
@@ -70,9 +67,6 @@ func batchQuotes(context *gin.Context) {
 
 func allQuotes(context *gin.Context) {
 	quotes, _ := environment.Env.Db.AllQuotes()
-	for _, v := range quotes {
-		fmt.Println(v)
-	}
 	context.JSON(http.StatusOK, quotes)
 }
 
