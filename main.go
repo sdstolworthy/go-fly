@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -9,15 +8,7 @@ import (
 
 	"github.com/sdstolworthy/go-fly/controllers"
 	"github.com/sdstolworthy/go-fly/environment"
-	skyscanner "github.com/sdstolworthy/go-skyscanner"
 )
-
-// Environment contains the application environment
-
-type quoteChannel struct {
-	quote *skyscanner.QuoteSummary
-	err   error
-}
 
 func main() {
 	environment.InitializeDatabase()
@@ -35,10 +26,4 @@ func defineRoutes(router *gin.Engine) {
 	})
 	quoteController := new(controllers.QuoteController)
 	quoteController.SetRoutes(router.Group("/quotes"))
-}
-
-func test() {
-
-	fmt.Println()
-
 }

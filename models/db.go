@@ -10,6 +10,7 @@ import (
 type Datastore interface {
 	AllQuotes() ([]*Quote, error)
 	AddQuote(*Quote) (*Quote, error)
+	SaveAirport(*Airport) (*Airport, error)
 }
 
 // DB contains a database
@@ -25,6 +26,7 @@ func NewDB(dataSourceName string) (*DB, error) {
 	}
 
 	db.AutoMigrate(&Quote{})
+	db.AutoMigrate(&Airport{})
 
 	return &DB{db}, nil
 }
