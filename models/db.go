@@ -1,8 +1,12 @@
 package models
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/jinzhu/gorm"
 	// Be ye therefore justified
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
@@ -21,7 +25,9 @@ type DB struct {
 
 // NewDB returns a pointer to a new database connection
 func NewDB(dataSourceName string) (*DB, error) {
-	db, err := gorm.Open("sqlite3", dataSourceName)
+	dv := getDatabaseEnvironment()
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", dv.Host, dv.Port, dv.User, dv.DbName, dv.Password)
+	db, err := gorm.Open("postgres", connectionString)
 	if err != nil {
 		return nil, err
 	}
@@ -30,4 +36,24 @@ func NewDB(dataSourceName string) (*DB, error) {
 	db.AutoMigrate(&Airport{})
 
 	return &DB{db}, nil
+}
+
+// DbVariables represents the variables necessary to open a connection to the postgres db
+type DbVariables struct {
+	Host     string
+	Port     string
+	User     string
+	DbName   string
+	Password string
+}
+
+func getDatabaseEnvironment() DbVariables {
+	fmt.Println("port", os.Getenv("POSTGRES_PORT"))
+	return DbVariables{
+		Host:     os.Getenv("POSTGRES_HOST"),
+		Port:     os.Getenv("POSTGRES_PORT"),
+		User:     os.Getenv("POSTGRES_USER"),
+		DbName:   os.Getenv("DATABASE_NAME"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+	}
 }

@@ -2,7 +2,24 @@ version: '3'
 
 services:
   gofly:
-    build: .
     restart: always
+    build: .
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - DATABASE_NAME=go-fly
+      - POSTGRES_PASSWORD=go-fly
+    depends_on:
+      - postgres
     ports:
       - '8080:8080'
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=go-fly
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=gofly
+    expose:
+      - "5432"
