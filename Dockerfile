@@ -5,8 +5,8 @@ ADD . /go/src/github.com/sdstolworthy/go-fly
 RUN cd /go/src/github.com/sdstolworthy/go-fly \
   && go get -v ./...
 
-RUN go install github.com/sdstolworthy/go-fly
+RUN cd /go/src/github.com/sdstolworthy/go-fly && go build -o gofly *.go
 
-ENTRYPOINT /go/bin/go-fly
+ENTRYPOINT /go/src/github.com/sdstolworthy/go-fly/gofly
 
 EXPOSE 8080
