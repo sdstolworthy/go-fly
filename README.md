@@ -11,7 +11,7 @@ Go Fly hits the skyscanner api and finds the cheapest flights available for the 
 1. Clone the repo. `git clone git@github.com:sdstolworthy/go-fly.git && cd go-fly/`
 2. Get the dependencies `dep ensure`
 3. (Optional) Seed the database
-    1. Run the seed files `go run seed/*.go`
+    1. Run the seed files `go run seed/*.go -airport`
 4. Run the server from the main directory `go run *.go`
 
 ## Docker Server

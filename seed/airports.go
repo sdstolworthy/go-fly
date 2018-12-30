@@ -53,7 +53,6 @@ func parseAirportCSV() []*models.Airport {
 		if record[airportType] != "large_airport" {
 			continue
 		}
-		fmt.Println(record)
 		newAirport := &models.Airport{
 			Continent:    record[continent],
 			Country:      record[isoCountry],
