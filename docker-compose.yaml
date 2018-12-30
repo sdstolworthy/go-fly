@@ -10,6 +10,7 @@ services:
       - POSTGRES_USER=postgres
       - DATABASE_NAME=go-fly
       - POSTGRES_PASSWORD=go-fly
+      - PORT=8080
     depends_on:
       - postgres
     ports:

@@ -6,11 +6,20 @@ Go Fly hits the skyscanner api and finds the cheapest flights available for the 
 
 # Getting Started
 
+## Local Development Server
+
 1. Clone the repo. `git clone git@github.com:sdstolworthy/go-fly.git && cd go-fly/`
 2. Get the dependencies `dep ensure`
 3. (Optional) Seed the database
     1. Run the seed files `go run seed/*.go`
 4. Run the server from the main directory `go run *.go`
+
+## Docker Server
+
+1. Clone the repo.
+2. Run `docker-compose up -d`
+
+__Note__: If you make changes to the source, you must manually run `docker-compose build` to update the docker image with the new source code.
 
 For convenience, I have included my `.vscode/launch.json`. You can use this to work with the debugging functions in VSCode.
 

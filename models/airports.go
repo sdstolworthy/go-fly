@@ -43,6 +43,6 @@ func (db *DB) GetAirport(airport *Airport) (*Airport, error) {
 // SearchAirports returns airports based on iatacode
 func (db *DB) SearchAirports(airport *Airport) ([]*Airport, error) {
 	var airports []*Airport
-	db.Where("iata_code LIKE ?", fmt.Sprintf("%%%s%%", airport.IataCode)).Find(&airports)
+	db.Where("upper(iata_code) LIKE upper(?)", fmt.Sprintf("%%%s%%", airport.IataCode)).Find(&airports)
 	return airports, nil
 }
