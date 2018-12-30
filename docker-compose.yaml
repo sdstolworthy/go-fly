@@ -13,13 +13,13 @@ services:
     depends_on:
       - postgres
     ports:
-      - '8080:8080'
+      - "8080:8080"
   postgres:
     image: postgres
     restart: always
     environment:
       - POSTGRES_PASSWORD=go-fly
       - POSTGRES_USER=postgres
-      - POSTGRES_DB=gofly
+      - POSTGRES_DB=go-fly
     expose:
       - "5432"
