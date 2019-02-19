@@ -24,7 +24,7 @@ services:
       - POSTGRES_PASSWORD=go-fly
       - POSTGRES_USER=postgres
       - POSTGRES_DB=go-fly
-  volumes:
+    volumes:
       - /opt/go-fly/postgresql:/var/lib/postgresql
     expose:
       - "5432"
