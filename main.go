@@ -38,4 +38,7 @@ func defineRoutes(router *gin.Engine) {
 
 	airportController := new(controllers.AirportController)
 	airportController.SetRoutes(router.Group("/airports"))
+
+	fulfillmentController := new(controllers.FulfillmentController)
+	fulfillmentController.SetRoutes(router.Group("/fulfillment"))
 }
