@@ -40,9 +40,16 @@ func (db *DB) GetAirport(airport *Airport) (*Airport, error) {
 	return airport, nil
 }
 
-// SearchAirports returns airports based on iatacode
-func (db *DB) SearchAirports(airport *Airport) ([]*Airport, error) {
+// SearchAirportsByIATA returns airports based on iatacode
+func (db *DB) SearchAirportsByIATA(airport *Airport) ([]*Airport, error) {
 	var airports []*Airport
 	db.Where("upper(iata_code) LIKE upper(?)", fmt.Sprintf("%%%s%%", airport.IataCode)).Find(&airports)
+	return airports, nil
+}
+
+// SearchAirportsByCity returns a list of airports found by city
+func (db *DB) SearchAirportsByCity(airport *Airport) ([]*Airport, error) {
+	var airports []*Airport
+	db.Where("upper(municipality) LIKE upper(?)", fmt.Sprintf("%%%s%%", airport.Municipality)).Find(&airports)
 	return airports, nil
 }

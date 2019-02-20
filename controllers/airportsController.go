@@ -22,10 +22,21 @@ func (c *AirportController) SetRoutes(router *gin.RouterGroup) {
 
 func searchAirports(context *gin.Context) {
 	airportCode := context.Query("iataCode")
-	airportResults, err := environment.Env.Db.SearchAirports(&models.Airport{IataCode: airportCode})
-	if err != nil {
-		context.JSON(http.StatusNoContent, gin.H{"message": "No results found"})
-		return
+	if airportCode != "" {
+		airportResults, err := environment.Env.Db.SearchAirportsByIATA(&models.Airport{IataCode: airportCode})
+		if err != nil {
+			context.JSON(http.StatusNoContent, gin.H{"message": "No results found"})
+			return
+		}
+		context.JSON(http.StatusOK, airportResults)
 	}
-	context.JSON(http.StatusOK, airportResults)
+	cityName := context.Query("cityName")
+	if cityName != "" {
+		airportResults, err := environment.Env.Db.SearchAirportsByCity(&models.Airport{Municipality: cityName})
+		if err != nil {
+			context.JSON(http.StatusNoContent, gin.H{"message": "No results found"})
+			return
+		}
+		context.JSON(http.StatusOK, airportResults)
+	}
 }
