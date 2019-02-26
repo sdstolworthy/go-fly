@@ -5,4 +5,5 @@
 skyscanner-conf.yaml
 debug
 vendor/
-.e
+.env
+.env*
