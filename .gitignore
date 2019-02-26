@@ -7,3 +7,4 @@ debug
 vendor/
 .env
 .env*
+!.env.example
